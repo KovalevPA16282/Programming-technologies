@@ -20,7 +20,7 @@ namespace Zavod //GOIDA
                 Console.WriteLine($"{tank.Name} ({tank.Description}): {unit?.Name} -> {factory?.Name}");
             }
 
-            int totalVolume = GetTotalVolume(tanks);
+            int totalVolume = GetTotalVolume(null);
             Console.WriteLine($"Общий объем резервуаров: {totalVolume}");
 
             Console.Write("Введите имя резервуара для поиска: ");

@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Guess_the_number
 {
@@ -6,15 +7,24 @@ namespace Guess_the_number
     // Запуск игры
     public class Program
     {
+
         public static void Main()
         {
-            var game = new NumberGuessingGame(new RandomNumberGenerator(), new ConsoleUserInteraction());
-            game.Play();
+            var serviceProvider = new ServiceCollection().AddSingleton<IRandomNumberGenerator, RandomNumberGenerator>().AddTransient<IUserInteraction, ConsoleUserInteraction>().AddTransient<NumberGuessingGame>().BuildServiceProvider();
+
+
+
+            var game = serviceProvider.GetService<NumberGuessingGame>();
+            game?.Play();
         }
     }
 
 }
 
+// вместо AddSingleton тут AddTransient
+// потому что AddSingleton	- объект создаётся один раз при первом запросе. Один и тот же экземпляр используется везде
+// AddTransient	Каждый раз при запросе. Каждый раз создаётся новый экземпляр
+// 
 
 
 
