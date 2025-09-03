@@ -10,7 +10,9 @@ namespace Guess_the_number
 
         public static void Main()
         {
-            var serviceProvider = new ServiceCollection().AddSingleton<IRandomNumberGenerator, RandomNumberGenerator>().AddTransient<IUserInteraction, ConsoleUserInteraction>().AddTransient<NumberGuessingGame>().BuildServiceProvider();
+            var serviceProvider = new ServiceCollection().AddSingleton<IRandomNumberGenerator, RandomNumberGenerator>().
+                AddTransient<IUserInteraction, ConsoleUserInteraction>().
+                AddTransient<NumberGuessingGame>().BuildServiceProvider();
 
 
 

@@ -37,7 +37,7 @@ namespace Guess_the_number
                 for (int i = 0; i < attempts; i++) // цикл количества попыток
                 {
                     _userInteraction.ShowMessage("Введите число:");
-                    int guess = _userInteraction.GetInput();
+                    int guess = _userInteraction.GetInput(_min, _max);
 
                     if (guess < secretNumber)
                         _userInteraction.ShowMessage("Загаданное число больше!");

@@ -3,15 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Text.Json;
+
 
 namespace Zavod
 {
     internal class Unit
     {
-        public int Id { get; }
-        public string Name { get; }
-        public string Description { get; }
-        public int FactoryId { get; }
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public int FactoryId { get; set; }
 
 
 

@@ -3,17 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Text.Json;
+
 
 namespace Zavod
 {
-    internal class Tank
+    public class Tank
     {
-        public int Id { get; }
-        public string Name { get; }
-        public string Description { get; }
-        public int Volume { get; }
-        public int MaxVolume { get; }
-        public int UnitId { get; }
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public int Volume { get; set; }
+        public int MaxVolume { get; set; }
+        public int UnitId { get; set; }
 
 
         // Конструктор по умолчанию

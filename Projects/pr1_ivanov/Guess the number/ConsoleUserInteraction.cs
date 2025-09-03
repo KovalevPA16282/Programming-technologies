@@ -13,12 +13,20 @@ namespace Guess_the_number
         public void ShowMessage(string message) => Console.WriteLine(message);
 
         // Ввод сообщения
-        public int GetInput()
+        public int GetInput(int min, int max)
         {
             while (true)
             {
-                if (int.TryParse(Console.ReadLine(), out int result))
-                    return result;
+                if (int.TryParse(Console.ReadLine(), out int result)) 
+                    if ((result >= min) && (result <= max))
+                    {
+                        return result;
+                    }
+                else
+                    {
+                        Console.WriteLine($"Ошибка! Число должно быть в диапозоне от {min} до {max}");
+                    }
+                        
                 Console.WriteLine("Введите корректное число!");
             }
         }

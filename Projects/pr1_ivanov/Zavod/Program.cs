@@ -1,26 +1,51 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Text.Json;
 
-namespace Zavod //GOIDA
+
+namespace Zavod //GOooool
 {
     internal class Program
     {
         static void Main(string[] args)
         {
-            var factories = GetFactories();
+            /*var factories = GetFactories();
             var units = GetUnits();
-            var tanks = GetTanks();
+            var tanks = GetTanks();*/
 
-            Console.WriteLine("Список резервуаров с их установками и заводами:");
-            foreach (var tank in tanks)
-            {
-                var unit = units.FirstOrDefault(u => u.Id == tank.UnitId);
-                var factory = factories.FirstOrDefault(f => f.Id == unit?.FactoryId);
-                Console.WriteLine($"{tank.Name} ({tank.Description}): {unit?.Name} -> {factory?.Name}");
-            }
+            string projectDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, @"..\..\..\"));
+            string dataDir = Path.Combine(projectDir, "Data");
 
-            int totalVolume = GetTotalVolume(null);
+            var factories = JsonLoader.LoadFromJson<Factory>(Path.Combine(dataDir, "Factory.json"));
+            var units = JsonLoader.LoadFromJson<Unit>(Path.Combine(dataDir, "Unit.json"));
+            var tanks = JsonLoader.LoadFromJson<Tank>(Path.Combine(dataDir, "Tanks.json"));
+
+
+
+            //---------------------------------------------------------------------------------------------------------------
+            // ----- Синтаксис запросов -----
+            /*
+            var query = from t in tanks
+                        join u in units on t.UnitId equals u.Id
+                        join f in factories on u.FactoryId equals f.Id
+                        select new { Tank = t, Unit = u, Factory = f };
+
+            foreach (var item in query)
+                Console.WriteLine($"{item.Tank.Name} ({item.Tank.Description}): {item.Unit.Name} -> {item.Factory.Name}");
+            */
+
+            // ----- Синтаксис методов -----
+            var query2 = tanks
+                .Join(units, t => t.UnitId, u => u.Id, (t, u) => new { t, u })
+                .Join(factories, tu => tu.u.FactoryId, f => f.Id, (tu, f) => new { tu.t, tu.u, f });
+
+            foreach (var item in query2)
+                Console.WriteLine($"{item.t.Name} ({item.t.Description}): {item.u.Name} -> {item.f.Name}");
+            //------------------------------------------------------------------------------------------------------------
+
+
+            int totalVolume = GetTotalVolume(tanks);
             Console.WriteLine($"Общий объем резервуаров: {totalVolume}");
 
             Console.Write("Введите имя резервуара для поиска: ");
@@ -36,46 +61,79 @@ namespace Zavod //GOIDA
             {
                 Console.WriteLine("Резервуар не найден.");
             }
+
+            JsonLoader.SaveToJson("factories_out.json", factories);
+            JsonLoader.SaveToJson("units_out.json", units);
+            JsonLoader.SaveToJson("tanks_out.json", tanks);
         }
         /*
         public static Factory[] GetFactories() => new Factory[] :)
         {
         new Factory(1, "НПЗ№1", "Первый нефтеперерабатывающий завод"),
         new Factory(2, "НПЗ№2", "Второй нефтеперерабатывающий завод")
-        };
-        */
+        };*/
+
 
         public static Factory[] GetFactories()
         {
-            return new Factory[]
+            try
             {
-        new Factory(1, "НПЗ№1", "Первый нефтеперерабатывающий завод"),
-        new Factory(2, "НПЗ№2", "Второй нефтеперерабатывающий завод")
+                return new Factory[]
+            {
+                new Factory(1, "НПЗ№1", "Первый нефтеперерабатывающий завод"),
+                new Factory(2, "НПЗ№2", "Второй нефтеперерабатывающий завод")
             };
+            }
+
+            catch (Exception ex1)
+            {
+                Console.WriteLine($"{ex1.Message}");
+                return new Factory[0];
+            }
+
         }
 
         public static Unit[] GetUnits()
         {
-            return new Unit[]
+            try
             {
-        new Unit(1, "ГФУ-2", "Газофракционирующая установка", 1),
-        new Unit(2, "АВТ-6", "Атмосферно-вакуумная трубчатка", 1),
-        new Unit(3, "АВТ-10", "Атмосферно-вакуумная трубчатка", 2)
-            };
+                return new Unit[]
+                {
+                new Unit(1, "ГФУ-2", "Газофракционирующая установка", 1),
+                new Unit(2, "АВТ-6", "Атмосферно-вакуумная трубчатка", 1),
+                new Unit(3, "АВТ-10", "Атмосферно-вакуумная трубчатка", 2)
+                };
+            }
+
+            catch (Exception ex)
+            {
+                Console.WriteLine($"{ex.Message}");
+                return new Unit[0];
+            }
+
         }
 
 
         public static Tank[] GetTanks()
         {
-            return new Tank[]
+            try
             {
-        new Tank(1, "Резервуар 1", "Наземный - вертикальный", 1500, 2000, 1),
-        new Tank(2, "Резервуар 2", "Наземный - горизонтальный", 2500, 3000, 1),
-        new Tank(3, "Дополнительный резервуар 24", "Наземный - горизонтальный", 3000, 3000, 2),
-        new Tank(4, "Резервуар 35", "Наземный - вертикальный", 3000, 3000, 2),
-        new Tank(5, "Резервуар 47", "Подземный - двустенный", 4000, 5000, 2),
-        new Tank(6, "Резервуар 256", "Подводный", 500, 500, 3)
-            };
+                return new Tank[]
+                {
+                new Tank(1, "Резервуар 1", "Наземный - вертикальный", 1500, 2000, 1),
+                new Tank(2, "Резервуар 2", "Наземный - горизонтальный", 2500, 3000, 1),
+                new Tank(3, "Дополнительный резервуар 24", "Наземный - горизонтальный", 3000, 3000, 2),
+                new Tank(4, "Резервуар 35", "Наземный - вертикальный", 3000, 3000, 2),
+                new Tank(5, "Резервуар 47", "Подземный - двустенный", 4000, 5000, 2),
+                new Tank(6, "Резервуар 256", "Подводный", 500, 500, 3)
+                };
+            }
+
+            catch (Exception ex)
+            {
+                Console.WriteLine($"{ex.Message}");
+                return new Tank[0];
+            }
         }
 
         /*
@@ -86,22 +144,101 @@ namespace Zavod //GOIDA
         }
         */
 
+        /*
         public static Unit FindUnit(Unit[] units, Tank[] tanks, string tankName)
         {
-            var tank = FindFirstOrDefault(tanks, t => t.Name == tankName);
-
-            if (tank != null)
+            try
             {
-                return FindFirstOrDefault(units, u => u.Id == tank.UnitId);
+                var tank = FindFirstOrDefault(tanks, t => t.Name == tankName);
+
+                if (tank != null)
+                {
+                    return FindFirstOrDefault(units, u => u.Id == tank.UnitId);
+                }
+
+                return null;
             }
 
-            return null;
+            catch (Exception ex)
+            {
+                Console.WriteLine($"{ex.Message}");
+                return null;
+            }
         }
+        */
+
+        public static Unit FindUnit(Unit[] units, Tank[] tanks, string tankName)
+        {
+            try
+            {
+                // ----- Синтаксис запросов -----
+                /*
+                var query = from t in tanks
+                            where t.Name == tankName
+                            join u in units on t.UnitId equals u.Id
+                            select u;
+
+                return query.FirstOrDefault();
+                */
+
+                // ----- Синтаксис методов -----
+                return tanks
+                    .Where(t => t.Name == tankName)
+                    .Join(units, t => t.UnitId, u => u.Id, (t, u) => u)
+                    .FirstOrDefault();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"{ex.Message}");
+                return null;
+            }
+        }
+
+        /*
+        public static Factory FindFactory(Factory[] factories, Unit unit)
+        {
+            try
+            {
+                if (factories is null)
+                    throw new ArgumentNullException(nameof(factories));
+
+                return FindFirstOrDefault(factories, f => f.Id == unit.FactoryId);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"{ex.Message}");
+                return null;
+            }
+        }
+        */
 
         public static Factory FindFactory(Factory[] factories, Unit unit)
         {
-            return FindFirstOrDefault(factories, f => f.Id == unit.FactoryId);
+            try
+            {
+                if (factories is null)
+                    throw new ArgumentNullException(nameof(factories));
+
+                // ----- Синтаксис запросов -----
+                /*
+                var query = from f in factories
+                            where f.Id == unit.FactoryId
+                            select f;
+
+                return query.FirstOrDefault();
+                */
+
+                // ----- Синтаксис методов -----
+                return factories.FirstOrDefault(f => f.Id == unit.FactoryId);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"{ex.Message}");
+                return null;
+            }
         }
+
+
 
         public static T FindFirstOrDefault<T>(T[] array, Func<T, bool> predicate)
         // Func<T, bool>: это делегат, который принимает один параметр типа T и возвращает bool
@@ -112,20 +249,40 @@ namespace Zavod //GOIDA
 
 
         {
-            foreach (var item in array)
+            try
             {
-                if (predicate(item))
+                foreach (var item in array)
                 {
-                    return item;
+                    if (predicate(item))
+                    {
+                        return item;
+                    }
                 }
+                return default(T);
             }
-            return default(T);
+            catch (Exception ex)
+            {
+                Console.WriteLine($"{ex.Message}");
+                return default(T);
+            }
+
         }
 
 
         public static int GetTotalVolume(Tank[] tanks)
         {
-            return tanks.Sum(t => t.Volume);
+            try
+            {
+                return tanks.Sum(t => t.Volume);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"{ex.Message}");
+                return 0;
+            }
+
         }
     }
 }
+
+

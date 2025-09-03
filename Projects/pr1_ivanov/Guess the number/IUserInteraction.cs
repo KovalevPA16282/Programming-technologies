@@ -10,6 +10,6 @@ namespace Guess_the_number
     public interface IUserInteraction
     {
         void ShowMessage(string message);
-        int GetInput();
+        int GetInput(int min, int max);
     }
 }

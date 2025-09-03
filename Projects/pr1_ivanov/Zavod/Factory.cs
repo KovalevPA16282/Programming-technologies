@@ -3,14 +3,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Text.Json;
+using System.Xml.Linq;
+
 
 namespace Zavod
 {
     internal class Factory
     {
-        public int Id { get; }
-        public string Name { get; }
-        public string Description { get; }
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
+
+        public Factory()
+        {
+            Id = 0;
+            Name = string.Empty;
+            Description = string.Empty;
+        }
 
         public Factory(int id, string name, string description)
         {
